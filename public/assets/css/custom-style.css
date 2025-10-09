@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'tiara';
+    src: url('assets/fonts/OpenSans.ttf');
+}
+
+.font-custom {
+    font-family: 'tiara';
+}
