@@ -18,6 +18,12 @@ class Pelanggan extends Model
         'phone',
     ];
 
+    // >>>> TAMBAHAN: relasi one-to-many ke Multipleuploads
+    public function files()
+    {
+        return $this->hasMany(\App\Models\Multipleuploads::class, 'pelanggan_id', 'pelanggan_id');
+    }
+
     public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
     {
         foreach ($filterableColumns as $column) {

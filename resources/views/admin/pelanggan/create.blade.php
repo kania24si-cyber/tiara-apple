@@ -83,6 +83,14 @@
                                         <input type="text" name ="phone" id="phone" class="form-control">
                                     </div>
 
+                                      <!-- >>>> TAMBAHAN: Input multiple files untuk pelanggan -->
+                            <div class="mb-3">
+                                <label for="filename" class="form-label">Upload Files</label>
+                                <input type="file" name="filename[]" id="filename" class="form-control" multiple>
+                                <small class="text-muted">Allowed: doc, docx, pdf, jpg, jpeg, png</small>
+                            </div>
+                            <!-- <<<< END TAMBAHAN -->
+                             
                                     <!-- Buttons -->
                                     <div class="">
                                         <button type="submit" class="btn btn-primary">Simpan</button>

@@ -8,6 +8,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\MultipleuploadsController;
 
 
 Route::get('/', function () {
@@ -47,3 +48,13 @@ Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show')
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit'); // TAMBAHAN
 Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update'); // TAMBAHAN
 Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); // TAMBAHAN
+
+Route::get('/multipleuploads', [MultipleuploadsController::class, 'index'])->name('uploads');
+Route::post('/save', [MultipleuploadsController::class, 'store'])->name('uploads.store');
+Route::post('/pelanggan/{id}/upload', [PelangganController::class, 'uploadFile'])
+      ->name('pelanggan.upload');
+
+      
+// Routes untuk multiple upload (jika ingin akses form upload terpisah)
+Route::get('/multipleuploads', [MultipleuploadsController::class, 'index'])->name('uploads');
+Route::post('/save', [MultipleuploadsController::class, 'store'])->name('uploads.store');
