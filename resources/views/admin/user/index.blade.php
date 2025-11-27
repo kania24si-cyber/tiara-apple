@@ -49,9 +49,8 @@
                         <tbody>
                             @foreach ($dataUser as $item)
                             <tr>
-
-                                <td>
-    {{-- Tambahan baru --}}
+{{-- Tambahan baru --}}
+<td>
     @if($item->profile_picture)
         <img src="{{ Storage::url($item->profile_picture) }}" width="50" class="rounded-circle">
     @else

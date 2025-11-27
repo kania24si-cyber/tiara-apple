@@ -93,44 +93,11 @@
                                 </div>
 <!-- Tambahkan sebelum tombol Simpan Perubahan -->
 <div class="mb-3">
-    <label for="files" class="form-label">Upload File / Dokumen</label>
-    <input type="file" name="files[]" class="form-control" multiple>
+    <a href="{{ route('uploads') }}" class="btn btn-primary btn-sm">
+        Upload Multiple Files
+    </a>
 </div>
-
-<!-- Tampilkan daftar file lama -->
-@if($dataPelanggan->uploads->count() > 0)
-    <div class="mb-3">
-        <label class="form-label">File Terupload</label>
-        <ul>
-            @foreach($dataPelanggan->uploads as $file)
-                <li>
-                    <a href="{{ asset('uploads/'.$file->filename) }}" target="_blank">{{ $file->filename }}</a>
-                    <form action="{{ route('pelanggan.uploads.destroy', $file->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
-                    </form>
-                </li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-
-                            <!-- >>>> TAMBAHAN: Tampilkan file yang sudah ada -->
-                            <div class="mb-3">
-                                <label class="form-label">File Tersimpan</label>
-                                <div>
-                                    @foreach($dataPelanggan->files as $file)
-                                        <div class="mb-1">
-                                            <a href="{{ asset($file->filepath) }}" target="_blank">{{ $file->filename }}</a>
-                                        </div>
-                                    @endforeach
-                                    @if($dataPelanggan->files->isEmpty())
-                                        <p class="text-muted">Belum ada file terupload.</p>
-                                    @endif
-                                </div>
-                            </div>
+        
                             <!-- <<<< END TAMBAHAN -->
                              
                                 <!-- Buttons -->
