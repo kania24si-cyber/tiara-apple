@@ -89,6 +89,8 @@
                         </tbody>
 
                     </table>
+                    {{ $dataUser->links('pagination::bootstrap-5') }}
+
                 </div>
 
             </div>

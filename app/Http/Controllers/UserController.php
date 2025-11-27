@@ -12,11 +12,13 @@ class UserController extends Controller
     // ============================
     // LIST USER
     // ============================
-    public function index()
-    {
-        $dataUser = User::all();
-        return view('admin.user.index', compact('dataUser'));
-    }
+    public function index(Request $request)
+{
+    $data['dataUser'] = User::paginate(10)->onEachSide(2);
+
+    return view('admin.user.index', $data);
+}
+
 
     // ============================
     // FORM TAMBAH
