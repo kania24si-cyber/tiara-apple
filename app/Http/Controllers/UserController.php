@@ -2,106 +2,133 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // ============================
+    // LIST USER
+    // ============================
     public function index()
     {
-        $data['dataUser'] = User::all();
-        return view('admin.user.index', $data);
+        $dataUser = User::all();
+        return view('admin.user.index', compact('dataUser'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // ============================
+    // FORM TAMBAH
+    // ============================
     public function create()
     {
         return view('admin.user.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // ============================
+    // SIMPAN USER BARU
+    // ============================
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'min:8', 'confirmed'],
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+            'profile_picture' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
         ]);
 
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
-
-        return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $data['dataUser'] = User::findOrFail($id);
-        return view('admin.user.edit', $data);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $user_id = $id;
-        $user = User::findOrFail($user_id);
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users', 'email')->ignore($user->id),
-            ],
-            'password' => ['nullable', 'min:8', 'confirmed'], // opsional saat edit
-        ]);
-
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-
-        if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
+        // Upload foto profil
+        $path = null;
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
         }
 
+        User::create([
+            'name'            => $request->name,
+            'email'           => $request->email,
+            'password'        => Hash::make($request->password),
+            'profile_picture' => $path,
+        ]);
 
-        $user->save();
-        return redirect()->route('user.index')->with('success', 'perubahan data berhasil');
+        return redirect()->route('user.index')
+            ->with('success', 'User berhasil ditambahkan.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    // ============================
+    // DETAIL USER
+    // ============================
+    public function show($id)
     {
-        $user = User::findOrFail($id);
+        $dataUser = User::findOrFail($id);
+        return view('admin.user.index', compact('dataUser'));
+    }
 
-        $user->delete();
-        return redirect()->route('user.index')->with('succes', 'data berhasil dihapus');
+    // ============================
+    // FORM EDIT
+    // ============================
+    public function edit($id)
+    {
+        $dataUser = User::findOrFail($id);
+        return view('admin.user.edit', compact('dataUser'));
+    }
+
+    // ============================
+    // UPDATE USER
+    // ============================
+    public function update(Request $request, $id)
+    {
+        $dataUser = User::findOrFail($id);
+
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $dataUser->id,
+            'password' => 'nullable|min:6|confirmed',
+            'profile_picture' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+        ]);
+
+        // Jika foto diganti
+        if ($request->hasFile('profile_picture')) {
+
+            // Hapus foto lama
+            if (!empty($dataUser->profile_picture)) {
+                Storage::disk('public')->delete($dataUser->profile_picture);
+            }
+
+            // Simpan foto baru
+            $dataUser->profile_picture = 
+                $request->file('profile_picture')->store('profile_pictures', 'public');
+        }
+
+        // Update data
+        $dataUser->name = $request->name;
+        $dataUser->email = $request->email;
+
+        if ($request->password) {
+            $dataUser->password = Hash::make($request->password);
+        }
+
+        $dataUser->save();
+
+        return redirect()->route('user.index')
+            ->with('success', 'User berhasil diperbarui.');
+    }
+
+    // ============================
+    // HAPUS USER
+    // ============================
+    public function destroy($id)
+    {
+        $dataUser = User::findOrFail($id);
+
+        // Hapus foto
+        if (!empty($dataUser->profile_picture)) {
+            Storage::disk('public')->delete($dataUser->profile_picture);
+        }
+
+        $dataUser->delete();
+
+        return redirect()->route('user.index')
+            ->with('success', 'User berhasil dihapus.');
     }
 }

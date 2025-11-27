@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MahasiswaController;
@@ -40,3 +41,9 @@ Route::get('/dashboard',[DashboardController::class,'index'])
 
 Route::resource('pelanggan', PelangganController::class);
 Route::resource('user', UserController::class);
+
+// ROUTE PROFILE
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show'); // TAMBAHAN
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit'); // TAMBAHAN
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update'); // TAMBAHAN
+Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); // TAMBAHAN
