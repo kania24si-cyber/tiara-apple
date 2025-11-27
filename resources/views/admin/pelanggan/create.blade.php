@@ -83,13 +83,15 @@
                                         <input type="text" name ="phone" id="phone" class="form-control">
                                     </div>
 
-                                      <!-- >>>> TAMBAHAN: Input multiple files untuk pelanggan -->
-                            <div class="mb-3">
-                                <label for="filename" class="form-label">Upload Files</label>
-                                <input type="file" name="filename[]" id="filename" class="form-control" multiple>
-                                <small class="text-muted">Allowed: doc, docx, pdf, jpg, jpeg, png</small>
-                            </div>
+                                    <!-- Tambahkan sebelum tombol Simpan Perubahan -->
+<div class="mb-3">
+    <a href="{{ route('uploads') }}" class="btn btn-primary btn-sm">
+        Upload Multiple Files
+    </a>
+</div>
+        
                             <!-- <<<< END TAMBAHAN -->
+                             
                              
                                     <!-- Buttons -->
                                     <div class="">
