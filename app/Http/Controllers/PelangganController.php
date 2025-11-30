@@ -88,7 +88,7 @@ class PelangganController extends Controller
      */
     public function edit(string $id)
     {
-        $data['dataPelanggan'] = Pelanggan::findOrFail($id);
+        $data['dataPelanggan'] = Pelanggan::with('files')->findOrFail($id);
         return view('admin.pelanggan.edit', $data);
     }
 
@@ -140,4 +140,44 @@ class PelangganController extends Controller
         $pelanggan->delete();
         return redirect()->route('pelanggan.index')->with('succes', 'data berhasil dihapus');
     }
+
+    
+    public function deleteFile($id)
+    {
+    $file = Multipleuploads::findOrFail($id);
+
+    if (Storage::exists('public/pelanggan/' . $file->filename)) {
+        Storage::delete('public/pelanggan/' . $file->filename);
+    }
+
+    $file->delete();
+
+    return back()->with('success', 'File berhasil dihapus!');
+    }
+
+    public function uploadFile(Request $request, $id)
+{
+    $request->validate([
+        'filename' => 'required|array',
+        'filename.*' => 'file|mimes:doc,docx,pdf,jpg,jpeg,png|max:2048'
+    ]);
+
+    $pelanggan = Pelanggan::findOrFail($id);
+
+    foreach ($request->file('filename') as $file) {
+        $filename = time().'-'.str_replace(' ','-',$file->getClientOriginalName());
+        $file->storeAs('public/pelanggan', $filename);
+
+        Multipleuploads::create([
+            'pelanggan_id' => $pelanggan->pelanggan_id,
+            'filename' => $filename,
+            'filepath' => 'storage/pelanggan/'.$filename,
+            'filesize' => $file->getSize()
+        ]);
+    }
+
+    return back()->with('success','File berhasil ditambah!');
+}
+
+    //end tambahan
 }

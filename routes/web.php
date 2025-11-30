@@ -49,12 +49,23 @@ Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.e
 Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update'); // TAMBAHAN
 Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); // TAMBAHAN
 
-Route::get('/multipleuploads', [MultipleuploadsController::class, 'index'])->name('uploads');
-Route::post('/save', [MultipleuploadsController::class, 'store'])->name('uploads.store');
-Route::post('/pelanggan/{id}/upload', [PelangganController::class, 'uploadFile'])
-      ->name('pelanggan.upload');
+
 
       
 // Routes untuk multiple upload (jika ingin akses form upload terpisah)
 Route::get('/multipleuploads', [MultipleuploadsController::class, 'index'])->name('uploads');
 Route::post('/save', [MultipleuploadsController::class, 'store'])->name('uploads.store');
+Route::resource('pelanggan', App\Http\Controllers\PelangganController::class);
+
+////// DITAMBAHKAN //////
+Route::post('/pelanggan/{id}/upload-file', 
+    [PelangganController::class, 'uploadFile']
+)->name('pelanggan.uploadFile');
+
+
+////// DITAMBAHKAN //////
+Route::delete('/pelanggan/delete-file/{id}',
+    [App\Http\Controllers\PelangganController::class, 'deleteFile']
+)->name('pelanggan.deleteFile');
+
+

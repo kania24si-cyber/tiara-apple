@@ -28,10 +28,11 @@ class MultipleuploadsController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'filename' => 'required',
-            'filename.*' => 'mimes:doc,docx,PDF,pdf,jpg,jpeg,png|max:2000'
-        ]);
+$request->validate([
+    'filename' => 'required|array',
+    'filename.*' => 'file|mimes:doc,docx,pdf,jpg,jpeg,png|max:2048'
+]);
+
 
         if ($request->hasfile('filename')) {
             $files = [];
