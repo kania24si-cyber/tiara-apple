@@ -1,11 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\Multipleuploads;
 use App\Models\Pelanggan;
-use App\Models\Multipleuploads; // >>>> TAMBAHAN
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage; // >>>> TAMBAHAN
+use Illuminate\Container\Attributes\Auth;
+use Illuminate\Http\Request; // >>>> TAMBAHAN
+use Illuminate\Support\Facades\Storage;
+// >>>> TAMBAHAN
 
 class PelangganController extends Controller
 {
@@ -15,7 +16,7 @@ class PelangganController extends Controller
     public function index(Request $request)
     {
         $filterableColumns = ['gender'];
-        $searchableColumn = ['First_name', 'last_name', 'email'];
+        $searchableColumn  = ['First_name', 'last_name', 'email'];
 
         $data['dataPelanggan'] = Pelanggan::filter($request, $filterableColumns)
             ->search($request, $searchableColumn)
@@ -29,6 +30,10 @@ class PelangganController extends Controller
      */
     public function create()
     {
+        if (! Auth::check()) {
+            //Redirect ke halaman dashboard
+            return redirect()->route('auth')->withErrors('Silahkan login dulu!');
+        }
         return view('admin.pelanggan.create');
     }
 
@@ -54,15 +59,15 @@ class PelangganController extends Controller
             foreach ($files as $file) {
                 if ($file->isValid()) {
                     $original = $file->getClientOriginalName();
-                    $filename = time().'-'.str_replace(' ','-',$original);
+                    $filename = time() . '-' . str_replace(' ', '-', $original);
                     // store di storage/app/public/pelanggan/
                     $storedPath = $file->storeAs('public/pelanggan', $filename);
 
                     Multipleuploads::create([
                         'pelanggan_id' => $pelanggan->pelanggan_id,
-                        'filename' => $filename,
-                        'filepath' => 'storage/pelanggan/' . $filename, // path untuk akses via public/storage
-                        'filesize' => $file->getSize(),
+                        'filename'     => $filename,
+                        'filepath'     => 'storage/pelanggan/' . $filename, // path untuk akses via public/storage
+                        'filesize'     => $file->getSize(),
                     ]);
                 }
             }
@@ -113,15 +118,15 @@ class PelangganController extends Controller
         if ($request->hasFile('filename')) {
             foreach ($request->file('filename') as $file) {
                 if ($file->isValid()) {
-                    $original = $file->getClientOriginalName();
-                    $filename = time().'-'.str_replace(' ','-',$original);
+                    $original   = $file->getClientOriginalName();
+                    $filename   = time() . '-' . str_replace(' ', '-', $original);
                     $storedPath = $file->storeAs('public/pelanggan', $filename);
 
                     Multipleuploads::create([
                         'pelanggan_id' => $pelanggan->pelanggan_id,
-                        'filename' => $filename,
-                        'filepath' => 'storage/pelanggan/' . $filename,
-                        'filesize' => $file->getSize(),
+                        'filename'     => $filename,
+                        'filepath'     => 'storage/pelanggan/' . $filename,
+                        'filesize'     => $file->getSize(),
                     ]);
                 }
             }
@@ -141,43 +146,42 @@ class PelangganController extends Controller
         return redirect()->route('pelanggan.index')->with('succes', 'data berhasil dihapus');
     }
 
-    
     public function deleteFile($id)
     {
-    $file = Multipleuploads::findOrFail($id);
+        $file = Multipleuploads::findOrFail($id);
 
-    if (Storage::exists('public/pelanggan/' . $file->filename)) {
-        Storage::delete('public/pelanggan/' . $file->filename);
-    }
+        if (Storage::exists('public/pelanggan/' . $file->filename)) {
+            Storage::delete('public/pelanggan/' . $file->filename);
+        }
 
-    $file->delete();
+        $file->delete();
 
-    return back()->with('success', 'File berhasil dihapus!');
+        return back()->with('success', 'File berhasil dihapus!');
     }
 
     public function uploadFile(Request $request, $id)
-{
-    $request->validate([
-        'filename' => 'required|array',
-        'filename.*' => 'file|mimes:doc,docx,pdf,jpg,jpeg,png|max:2048'
-    ]);
-
-    $pelanggan = Pelanggan::findOrFail($id);
-
-    foreach ($request->file('filename') as $file) {
-        $filename = time().'-'.str_replace(' ','-',$file->getClientOriginalName());
-        $file->storeAs('public/pelanggan', $filename);
-
-        Multipleuploads::create([
-            'pelanggan_id' => $pelanggan->pelanggan_id,
-            'filename' => $filename,
-            'filepath' => 'storage/pelanggan/'.$filename,
-            'filesize' => $file->getSize()
+    {
+        $request->validate([
+            'filename'   => 'required|array',
+            'filename.*' => 'file|mimes:doc,docx,pdf,jpg,jpeg,png|max:2048',
         ]);
-    }
 
-    return back()->with('success','File berhasil ditambah!');
-}
+        $pelanggan = Pelanggan::findOrFail($id);
+
+        foreach ($request->file('filename') as $file) {
+            $filename = time() . '-' . str_replace(' ', '-', $file->getClientOriginalName());
+            $file->storeAs('public/pelanggan', $filename);
+
+            Multipleuploads::create([
+                'pelanggan_id' => $pelanggan->pelanggan_id,
+                'filename'     => $filename,
+                'filepath'     => 'storage/pelanggan/' . $filename,
+                'filesize'     => $file->getSize(),
+            ]);
+        }
+
+        return back()->with('success', 'File berhasil ditambah!');
+    }
 
     //end tambahan
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
@@ -9,7 +10,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\MultipleuploadsController;
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,50 +22,50 @@ Route::get('/mahasiswa', function () {
     return 'Halo Mahasiswa';
 })->name('mahasiswa.show');
 
-Route::get('/nama/{param1?}', function ($param1='') {
-    return 'Nama saya: '.$param1;
+Route::get('/nama/{param1?}', function ($param1 = '') {
+    return 'Nama saya: ' . $param1;
 });
-Route::get('/mahasiswa/{param1}', [MahasiswaController::class,'show']);
+Route::get('/mahasiswa/{param1}', [MahasiswaController::class, 'show']);
 
 Route::get('/about', function () {
     return view('halaman-about');
 })->name('route.about');
 
-Route::get('/home',[HomeController::class,'index'])
+Route::get('/home', [HomeController::class, 'index'])
     ->name('home');
 
 Route::post('question/store', [QuestionController::class, 'store'])
-		->name('question.store');
+    ->name('question.store');
 
-Route::get('/dashboard',[DashboardController::class,'index'])
-->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->name('dashboard');
 
 Route::resource('pelanggan', PelangganController::class);
 Route::resource('user', UserController::class);
 
 // ROUTE PROFILE
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show'); // TAMBAHAN
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit'); // TAMBAHAN
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update'); // TAMBAHAN
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');          // TAMBAHAN
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');     // TAMBAHAN
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');      // TAMBAHAN
 Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); // TAMBAHAN
 
-
-
-      
 // Routes untuk multiple upload (jika ingin akses form upload terpisah)
 Route::get('/multipleuploads', [MultipleuploadsController::class, 'index'])->name('uploads');
 Route::post('/save', [MultipleuploadsController::class, 'store'])->name('uploads.store');
 Route::resource('pelanggan', App\Http\Controllers\PelangganController::class);
 
 ////// DITAMBAHKAN //////
-Route::post('/pelanggan/{id}/upload-file', 
+Route::post('/pelanggan/{id}/upload-file',
     [PelangganController::class, 'uploadFile']
 )->name('pelanggan.uploadFile');
-
 
 ////// DITAMBAHKAN //////
 Route::delete('/pelanggan/delete-file/{id}',
     [App\Http\Controllers\PelangganController::class, 'deleteFile']
 )->name('pelanggan.deleteFile');
 
+Route::get('auth', [AuthController::class, 'index'])->name('auth');
+Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
 
+
+Route::get('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
